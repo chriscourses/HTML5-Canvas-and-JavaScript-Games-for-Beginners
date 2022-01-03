@@ -51,7 +51,6 @@ class Player {
     } else {
       this.velocity.y = 0
     }
-
     this.x = this.x + this.velocity.x
     this.y = this.y + this.velocity.y
   }
@@ -87,6 +86,11 @@ class Enemy {
     this.radius = radius
     this.color = color
     this.velocity = velocity
+    this.type = 'linear'
+
+    if (Math.random() < 0.25) {
+      this.type = 'homing'
+    }
   }
 
   draw() {
@@ -98,8 +102,21 @@ class Enemy {
 
   update() {
     this.draw()
-    this.x = this.x + this.velocity.x
-    this.y = this.y + this.velocity.y
+
+    if (this.type === 'linear') {
+      this.x = this.x + this.velocity.x
+      this.y = this.y + this.velocity.y
+    } else if (this.type === 'homing') {
+      const angle = Math.atan2(player.y - this.y, player.x - this.x)
+
+      this.velocity = {
+        x: Math.cos(angle),
+        y: Math.sin(angle)
+      }
+
+      this.x = this.x + this.velocity.x
+      this.y = this.y + this.velocity.y
+    }
   }
 }
 
@@ -271,17 +288,12 @@ function animate() {
 }
 
 addEventListener('click', (event) => {
-  const angle = Math.atan2(
-    event.clientY - canvas.height / 2,
-    event.clientX - canvas.width / 2
-  )
+  const angle = Math.atan2(event.clientY - player.y, event.clientX - player.x)
   const velocity = {
     x: Math.cos(angle) * 5,
     y: Math.sin(angle) * 5
   }
-  projectiles.push(
-    new Projectile(canvas.width / 2, canvas.height / 2, 5, 'white', velocity)
-  )
+  projectiles.push(new Projectile(player.x, player.y, 5, 'white', velocity))
 })
 
 startGameBtn.addEventListener('click', () => {
