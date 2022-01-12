@@ -298,6 +298,26 @@ function spawnPowerUps() {
   // }, 1000)
 }
 
+function createScoreLabel(projectile, score) {
+  const scoreLabel = document.createElement('label')
+  scoreLabel.innerHTML = score
+  scoreLabel.style.position = 'absolute'
+  scoreLabel.style.color = 'white'
+  scoreLabel.style.userSelect = 'none'
+  scoreLabel.style.left = projectile.x
+  scoreLabel.style.top = projectile.y
+  document.body.appendChild(scoreLabel)
+
+  gsap.to(scoreLabel, {
+    opacity: 0,
+    y: -30,
+    duration: 0.75,
+    onComplete: () => {
+      scoreLabel.parentNode.removeChild(scoreLabel)
+    }
+  })
+}
+
 let animationId
 let score = 0
 let frame = 0
@@ -393,6 +413,8 @@ function animate() {
           score += 100
           scoreEl.innerHTML = score
 
+          createScoreLabel(projectile, 100)
+
           gsap.to(enemy, {
             radius: enemy.radius - 10
           })
@@ -403,6 +425,7 @@ function animate() {
           // remove from scene altogether
           score += 250
           scoreEl.innerHTML = score
+          createScoreLabel(projectile, 250)
 
           setTimeout(() => {
             enemies.splice(index, 1)
