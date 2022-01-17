@@ -226,6 +226,32 @@ class Particle {
   }
 }
 
+class BackgroundParticle {
+  constructor(x, y, radius, color) {
+    this.x = x
+    this.y = y
+    this.radius = radius
+    this.color = color
+    this.alpha = 0.05
+    this.initialAlpha = this.alpha
+  }
+
+  draw() {
+    c.save()
+    c.globalAlpha = this.alpha
+    c.beginPath()
+    c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+    c.fillStyle = this.color
+    c.fill()
+    c.restore()
+  }
+
+  update() {
+    this.draw()
+    // this.alpha -= 0.01
+  }
+}
+
 const x = canvas.width / 2
 const y = canvas.height / 2
 
@@ -234,6 +260,7 @@ let powerUps = []
 let projectiles = []
 let enemies = []
 let particles = []
+let backgroundParticles = []
 
 function init() {
   player = new Player(x, y, 10, 'white')
@@ -244,6 +271,12 @@ function init() {
   score = 0
   scoreEl.innerHTML = score
   bigScoreEl.innerHTML = score
+
+  for (let x = 0; x < canvas.width; x += 30) {
+    for (let y = 0; y < canvas.height; y += 30) {
+      backgroundParticles.push(new BackgroundParticle(x, y, 3, 'blue'))
+    }
+  }
 }
 
 function spawnEnemies() {
@@ -326,6 +359,35 @@ function animate() {
   frame++
   c.fillStyle = 'rgba(0, 0, 0, 0.1)'
   c.fillRect(0, 0, canvas.width, canvas.height)
+
+  backgroundParticles.forEach((backgroundParticle) => {
+    const dist = Math.hypot(
+      player.x - backgroundParticle.x,
+      player.y - backgroundParticle.y
+    )
+
+    const hideRadius = 100
+    if (dist < hideRadius) {
+      if (dist < 70) {
+        backgroundParticle.alpha = 0
+      } else {
+        backgroundParticle.alpha = 0.5
+      }
+    } else if (
+      dist >= hideRadius &&
+      backgroundParticle.alpha < backgroundParticle.initialAlpha
+    ) {
+      backgroundParticle.alpha += 0.01
+    } else if (
+      dist >= hideRadius &&
+      backgroundParticle.alpha > backgroundParticle.initialAlpha
+    ) {
+      backgroundParticle.alpha -= 0.01
+    }
+
+    backgroundParticle.update()
+  })
+
   player.update()
   particles.forEach((particle, index) => {
     if (particle.alpha <= 0) {
@@ -426,6 +488,21 @@ function animate() {
           score += 250
           scoreEl.innerHTML = score
           createScoreLabel(projectile, 250)
+
+          // change backgroundParticle colors
+          backgroundParticles.forEach((backgroundParticle) => {
+            backgroundParticle.color = enemy.color
+            gsap.to(backgroundParticle, {
+              alpha: 0.5,
+              duration: 0.015,
+              onComplete: () => {
+                gsap.to(backgroundParticle, {
+                  alpha: backgroundParticle.initialAlpha,
+                  duration: 0.03
+                })
+              }
+            })
+          })
 
           setTimeout(() => {
             enemies.splice(index, 1)
