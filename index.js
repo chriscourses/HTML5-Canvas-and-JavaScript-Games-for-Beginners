@@ -9,6 +9,13 @@ const startGameBtn = document.querySelector('#startGameBtn')
 const modalEl = document.querySelector('#modalEl')
 const bigScoreEl = document.querySelector('#bigScoreEl')
 
+const startGameAudio = new Audio('./audio/startGame.mp3')
+const endGameAudio = new Audio('./audio/endGame.mp3')
+const shootAudio = new Audio('./audio/shoot.mp3')
+const enemyHitAudio = new Audio('./audio/enemyHit.mp3')
+const enemyEliminatedAudio = new Audio('./audio/enemyEliminated.mp3')
+const obtainPowerUpAudio = new Audio('./audio/obtainPowerUp.mp3')
+
 class Player {
   constructor(x, y, radius, color) {
     this.x = x
@@ -63,6 +70,7 @@ class Player {
       y: Math.sin(angle) * 5
     }
     projectiles.push(new Projectile(this.x, this.y, 5, color, velocity))
+    shootAudio.cloneNode().play()
   }
 }
 
@@ -406,11 +414,14 @@ function animate() {
   powerUps.forEach((powerUp, index) => {
     const dist = Math.hypot(player.x - powerUp.x, player.y - powerUp.y)
 
+    // obtain power up
     // gain the automatic shooting ability
     if (dist - player.radius - powerUp.width / 2 < 1) {
       player.color = '#FFF500'
       player.powerUp = 'Automatic'
       powerUps.splice(index, 1)
+
+      obtainPowerUpAudio.cloneNode().play()
 
       setTimeout(() => {
         player.powerUp = null
@@ -447,6 +458,7 @@ function animate() {
       cancelAnimationFrame(animationId)
       modalEl.style.display = 'flex'
       bigScoreEl.innerHTML = score
+      endGameAudio.play()
     }
 
     projectiles.forEach((projectile, projectileIndex) => {
@@ -470,7 +482,10 @@ function animate() {
           )
         }
 
+        // shrink enemy
         if (enemy.radius - 10 > 5) {
+          enemyHitAudio.cloneNode().play()
+
           // increase our score
           score += 100
           scoreEl.innerHTML = score
@@ -484,6 +499,9 @@ function animate() {
             projectiles.splice(projectileIndex, 1)
           }, 0)
         } else {
+          // eliminate enemy
+          enemyEliminatedAudio.cloneNode().play()
+
           // remove from scene altogether
           score += 250
           scoreEl.innerHTML = score
@@ -548,6 +566,7 @@ startGameBtn.addEventListener('click', () => {
   spawnEnemies()
   spawnPowerUps()
   modalEl.style.display = 'none'
+  startGameAudio.play()
 })
 
 addEventListener('keydown', ({ keyCode }) => {
