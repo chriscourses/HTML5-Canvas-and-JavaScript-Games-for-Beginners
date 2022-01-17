@@ -463,6 +463,13 @@ function animate() {
       bigScoreEl.innerHTML = score
       endGameAudio.play()
       scene.active = false
+
+      gsap.to('#whiteModalEl', {
+        opacity: 1,
+        scale: 1,
+        duration: 0.45,
+        ease: 'expo'
+      })
     }
 
     projectiles.forEach((projectile, projectileIndex) => {
@@ -594,7 +601,6 @@ startGameBtn.addEventListener('click', () => {
   animate()
   spawnEnemies()
   spawnPowerUps()
-  modalEl.style.display = 'none'
   startGameAudio.play()
   scene.active = true
 
@@ -602,6 +608,16 @@ startGameBtn.addEventListener('click', () => {
   scoreEl.innerHTML = score
   bigScoreEl.innerHTML = score
   // backgroundMusicAudio.play()
+
+  gsap.to('#whiteModalEl', {
+    opacity: 0,
+    scale: 0.75,
+    duration: 0.25,
+    ease: 'expo.in',
+    onComplete: () => {
+      modalEl.style.display = 'none'
+    }
+  })
 })
 
 addEventListener('keydown', ({ keyCode }) => {
