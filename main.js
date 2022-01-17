@@ -1,3 +1,5 @@
+import { Howl } from 'howler'
+
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 
@@ -11,10 +13,10 @@ const bigScoreEl = document.querySelector('#bigScoreEl')
 
 const startGameAudio = new Audio('./audio/startGame.mp3')
 const endGameAudio = new Audio('./audio/endGame.mp3')
-const shootAudio = new Audio('./audio/shoot.mp3')
-const enemyHitAudio = new Audio('./audio/enemyHit.mp3')
-const enemyEliminatedAudio = new Audio('./audio/enemyEliminated.mp3')
-const obtainPowerUpAudio = new Audio('./audio/obtainPowerUp.mp3')
+const shootAudio = new Howl({ src: ['./audio/shoot.mp3'] })
+const enemyHitAudio = new Howl({ src: ['./audio/enemyHit.mp3'] })
+const enemyEliminatedAudio = new Howl({ src: ['./audio/enemyEliminated.mp3'] })
+const obtainPowerUpAudio = new Howl({ src: ['./audio/obtainPowerUp.mp3'] })
 const backgroundMusicAudio = new Audio('./audio/backgroundMusic.mp3')
 backgroundMusicAudio.loop = true
 
@@ -76,7 +78,7 @@ class Player {
       y: Math.sin(angle) * 5
     }
     projectiles.push(new Projectile(this.x, this.y, 5, color, velocity))
-    shootAudio.cloneNode().play()
+    shootAudio.play()
   }
 }
 
@@ -344,8 +346,8 @@ function createScoreLabel(projectile, score) {
   scoreLabel.style.position = 'absolute'
   scoreLabel.style.color = 'white'
   scoreLabel.style.userSelect = 'none'
-  scoreLabel.style.left = projectile.x
-  scoreLabel.style.top = projectile.y
+  scoreLabel.style.left = projectile.x + 'px'
+  scoreLabel.style.top = projectile.y + 'px'
   document.body.appendChild(scoreLabel)
 
   gsap.to(scoreLabel, {
@@ -423,7 +425,7 @@ function animate() {
       player.powerUp = 'Automatic'
       powerUps.splice(index, 1)
 
-      obtainPowerUpAudio.cloneNode().play()
+      obtainPowerUpAudio.play()
 
       setTimeout(() => {
         player.powerUp = null
@@ -495,7 +497,7 @@ function animate() {
 
         // shrink enemy
         if (enemy.radius - 10 > 5) {
-          enemyHitAudio.cloneNode().play()
+          enemyHitAudio.play()
 
           // increase our score
           score += 100
@@ -511,7 +513,7 @@ function animate() {
           }, 0)
         } else {
           // eliminate enemy
-          enemyEliminatedAudio.cloneNode().play()
+          enemyEliminatedAudio.play()
 
           // remove from scene altogether
           score += 250

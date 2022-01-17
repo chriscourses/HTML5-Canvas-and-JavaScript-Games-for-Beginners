@@ -8,5 +8,8 @@
   },
   "devDependencies": {
     "vite": "^2.3.3"
+  },
+  "dependencies": {
+    "howler": "^2.2.3"
   }
 }
