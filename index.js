@@ -15,6 +15,12 @@ const shootAudio = new Audio('./audio/shoot.mp3')
 const enemyHitAudio = new Audio('./audio/enemyHit.mp3')
 const enemyEliminatedAudio = new Audio('./audio/enemyEliminated.mp3')
 const obtainPowerUpAudio = new Audio('./audio/obtainPowerUp.mp3')
+const backgroundMusicAudio = new Audio('./audio/backgroundMusic.mp3')
+backgroundMusicAudio.loop = true
+
+const scene = {
+  active: false
+}
 
 class Player {
   constructor(x, y, radius, color) {
@@ -459,6 +465,7 @@ function animate() {
       modalEl.style.display = 'flex'
       bigScoreEl.innerHTML = score
       endGameAudio.play()
+      scene.active = false
     }
 
     projectiles.forEach((projectile, projectileIndex) => {
@@ -555,9 +562,11 @@ addEventListener('mouseup', () => {
 })
 
 addEventListener('click', ({ clientX, clientY }) => {
-  mouse.x = clientX
-  mouse.y = clientY
-  player.shoot(mouse)
+  if (scene.active) {
+    mouse.x = clientX
+    mouse.y = clientY
+    player.shoot(mouse)
+  }
 })
 
 startGameBtn.addEventListener('click', () => {
@@ -567,6 +576,8 @@ startGameBtn.addEventListener('click', () => {
   spawnPowerUps()
   modalEl.style.display = 'none'
   startGameAudio.play()
+  scene.active = true
+  backgroundMusicAudio.play()
 })
 
 addEventListener('keydown', ({ keyCode }) => {
