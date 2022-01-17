@@ -10,6 +10,8 @@ const scoreEl = document.querySelector('#scoreEl')
 const startGameBtn = document.querySelector('#startGameBtn')
 const modalEl = document.querySelector('#modalEl')
 const bigScoreEl = document.querySelector('#bigScoreEl')
+const soundOffEl = document.querySelector('#soundOffEl')
+const soundOnEl = document.querySelector('#soundOnEl')
 
 const startGameAudio = new Audio('./audio/startGame.mp3')
 const endGameAudio = new Audio('./audio/endGame.mp3')
@@ -651,4 +653,18 @@ addEventListener('keydown', ({ keyCode }) => {
       player.velocity.y -= 1
       break
   }
+})
+
+soundOffEl.addEventListener('click', () => {
+  console.log('mute')
+  backgroundMusicAudio.volume = 0
+  soundOnEl.style.display = 'block'
+  soundOffEl.style.display = 'none'
+})
+
+soundOnEl.addEventListener('click', () => {
+  console.log('sound on')
+  backgroundMusicAudio.volume = 1
+  soundOnEl.style.display = 'none'
+  soundOffEl.style.display = 'block'
 })
